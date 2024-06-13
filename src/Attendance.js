@@ -1,24 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity,Platform,StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 
+const baseURL = 'http://localhost:8080';
+
+
 export default function Attendance() {
   const navigation = useNavigation();
 
-  const studentDetails = {
-    name: "Khushi Yadav",
-    class: "10th",
-    section: "B",
-    hostal: "A",
-    room: "R32",
-  };
-  const attendanceData = {
-    present: 80,
-    absent: 10,
-    leaves: 10,
-    total: 365,
-  };
+  // const studentDetails = {
+  //   name: "Khushi Yadav",
+  //   class: "10th",
+  //   section: "B",
+  //   hostal: "A",
+  //   room: "R32",
+  // };
+  // const attendanceData = {
+  //   present: 80,
+  //   absent: 10,
+  //   leaves: 10,
+  //   total: 365,
+  // };
+  const [attendanceData, setAttendanceData] = useState(null);
+  const [studentDetails, setStudentDetails] = useState(null);
+
+
+  useEffect(() => {
+    const fetchAttendanceData = async () => {
+      try {
+        const studentId = '2'; // This should be fetched dynamically, possibly via prop
+        const studentResponse = await fetch(`${baseURL}/student/get/${studentId}`);
+        const attendanceResponse = await fetch(`${baseURL}/${studentId}`);
+
+        if (!studentResponse.ok || !attendanceResponse.ok) {
+          throw new Error(`Error fetching data: ${studentResponse.statusText} (${studentResponse.status})`);
+        }
+
+        const studentData = await studentResponse.json();
+        const attendanceData = await attendanceResponse.json();
+
+        setStudentDetails(studentData);
+        setAttendanceData(attendanceData);
+      } catch (err) {
+        console.error('Error fetching attendance data:', err);
+      } 
+    };
+
+    fetchAttendanceData();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -52,33 +82,34 @@ export default function Attendance() {
         {studentDetails ? (
           <View style={styles.tile}>
             <View style={styles.textRow}>
-              <Text style={styles.text}>Name: {studentDetails.name}</Text>
-              <Text style={styles.text}>Class: {studentDetails.class}</Text>
+              <Text style={styles.text}>Name: {studentDetails.fname} {studentDetails.lname}</Text>
+              <Text style={styles.text}>Class: {studentDetails.standard}</Text>
             </View>
             <View style={styles.textRow}>
               <Text style={styles.text}>Section: {studentDetails.section}</Text>
               <Text style={styles.text}>
-                Hostel: "{studentDetails.hostal}" {studentDetails.room}
+                Hostel: "{studentDetails.hostal}" {studentDetails.hostel_facility}
               </Text>
             </View>
           </View>
+          
         ) : null}
         {attendanceData ? (
           <View style={styles.attendanceContainer}>
             <View style={styles.attendanceRow}>
               <View style={styles.attendanceTile}>
                 <Text style={styles.text}>Total Days</Text>
-                <Text style={styles.text1}>{attendanceData.total}</Text>
+                <Text style={styles.text1}>{attendanceData.totalDays}</Text>
               </View>
               <View style={styles.attendanceTile}>
                 <Text style={styles.text}>Present Days</Text>
-                <Text style={styles.text1}>{attendanceData.present}</Text>
+                <Text style={styles.text1}>{attendanceData.presentDays}</Text>
               </View>
             </View>
             <View style={styles.attendanceRow}>
               <View style={styles.attendanceTile}>
                 <Text style={styles.text}>Leaves Days</Text>
-                <Text style={styles.text1}>{attendanceData.leaves} </Text>
+                <Text style={styles.text1}>{attendanceData.totalLeaves} </Text>
               </View>
               <View style={styles.attendanceTile}>
                 <Text style={styles.text}>Absent Days</Text>
