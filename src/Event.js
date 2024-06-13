@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -6,66 +6,75 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Platform,StatusBar
+  Platform,
+  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons, MaterialIcons, Entypo } from "@expo/vector-icons";
 import logo from "../assets/img/logoSchool.png";
-import holi from "../assets/img/holi.jpg";
-import diwali from "../assets/img/diwali.jpg";
+import logoEvent from "../assets/img/logo.png";
+import api from "./api/api";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const EventDetails = ({ item }) => {
-  const getImageForEvent = (eventName) => {
-    switch (eventName) {
-      case "Holi Event":
-        return holi;
-      case "Diwali Event":
-        return diwali;
-      default:
-        return null;
-    }
-  };
+  const [postedTime, setPostedTime] = useState(0);
+
+  useEffect(() => {
+    // convert into Wed Jun 12 2024 13:29:32 format
+    // const dateTime = new Date(item.createTimeStamp)
+    //   .toString()
+    //   .split(" GMT+0530")[0];
+
+    const givenDate = dayjs(item.createTimeStamp);
+    const currentDate = dayjs();
+    const timeAgo = givenDate.from(currentDate);
+    setPostedTime(timeAgo);
+  }, [item]);
 
   return (
     <View style={styles.eventDetailContainer}>
       <View style={styles.eventHeader}>
-        <Image source={logo} style={styles.eventLogo} resizeMode="contain" />
+        <View style={styles.logoContainer}>
+          <Image
+            source={logoEvent}
+            style={styles.eventLogo}
+            resizeMode="contain"
+          />
+        </View>
         <View style={styles.eventInfo}>
-          <Text style={styles.eventName}>{item.eventName}</Text>
-          <Text style={styles.postTime}>{item.postTime}</Text>
+          <Text style={styles.eventName}>{item.title}</Text>
+          <Text style={styles.postTime}>{postedTime}</Text>
         </View>
         <TouchableOpacity>
           <Entypo name="dots-three-vertical" size={20} color="#000" />
         </TouchableOpacity>
       </View>
-      <Image
-        source={getImageForEvent(item.eventName)}
-        style={styles.eventImage}
-      />
-      <Text style={styles.eventDesc}>{item.eventDesc}</Text>
+      <Image src="../assets/img/events.jpeg" style={styles.eventImage} />
+      <Text style={styles.eventDesc}>{item.description}</Text>
     </View>
   );
 };
 
 const Events = () => {
   const navigation = useNavigation();
+  const [eventData, setEventData] = useState([]);
 
-  const eventData = [
-    {
-      id: 1,
-      eventName: "Holi Event",
-      postTime: "2 hours ago",
-      eventDesc:
-        "We are excited to invite you to our Back to School Night on Thursday, September 8th from 6:00 pm to 8:00 pm.",
-    },
-    {
-      id: 2,
-      eventName: "Diwali Event",
-      postTime: "2 hours ago",
-      eventDesc:
-        "We are excited to invite you to our Back to School Night on Thursday, September 8th from 6:00 pm to 8:00 pm.",
-    },
-  ];
+  //get all events data
+  const getEventData = async () => {
+    try {
+      const res = await api.get("/event/get-all");
+      setEventData(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getEventData();
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -96,7 +105,14 @@ const Events = () => {
 
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.headerContent}>
-          <Image source={logo} style={styles.logo} resizeMode="contain" />
+          <View style={styles.mainLogoContainer}>
+            <Image
+              source={logoEvent}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+          {/* <Image source={logo} style={styles.logo} resizeMode="contain" /> */}
           <Text style={styles.schoolName}>DAV School</Text>
           <Text style={styles.location}>
             <Ionicons name="location-sharp" size={18} color="red" /> 5676 Raipur
@@ -136,12 +152,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     position: "relative",
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 30,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 10 : 30,
   },
   headerTitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingLeft: 45,
   },
   headerIcons: {
@@ -158,10 +174,22 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "90%",
   },
+  mainLogoContainer: {
+    height: 90,
+    width: 90,
+    marginHorizontal: "auto",
+    backgroundColor: "#FBF6EF",
+    borderWidth: 5,
+    borderColor: "#FF9D29",
+    borderRadius: 50,
+    textAlign: "center",
+  },
   logo: {
-    width: 80,
-    height: 80,
-    marginBottom: 10,
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    marginTop: 5,
+    marginHorizontal: "auto",
   },
   schoolName: {
     fontSize: 16,
@@ -209,14 +237,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
+  logoContainer: {
+    height: 45,
+    width: 45,
+    marginHorizontal: "auto",
+    backgroundColor: "#FBF6EF",
+    borderWidth: 4,
+    borderColor: "#FF9D29",
+    borderRadius: 50,
+    textAlign: "center",
+    marginRight: 4,
+  },
   eventLogo: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-    resizeMode: "contain",
+    width: 35,
+    height: 30,
+    borderRadius: 50,
+    marginTop: 4,
+    marginHorizontal: "auto",
   },
   eventInfo: {
     flex: 1,
+    marginLeft: 2,
   },
   eventName: {
     fontSize: 16,
