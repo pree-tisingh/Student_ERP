@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity,Platform,StatusBar } from "rea
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const baseURL = 'http://192.168.34.247:8080';
+const baseURL = 'http://localhost:8080';
 
 
 export default function Attendance() {
