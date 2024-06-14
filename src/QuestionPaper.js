@@ -1,11 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Platform, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Picker } from '@react-native-picker/picker';
+import baseURL from './api/baseURL';
 
-const QuestionPaper = ({ navigation }) => {
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedYear, setSelectedYear] = useState('');
+const QuestionPaper = ({ route, navigation }) => {
+  // Use props directly for initial state values
+  const [selectedSubject, setSelectedSubject] = useState(route.params?.selectedSubject || '');
+  const [selectedYear, setSelectedYear] = useState(route.params?.selectedYear || '');
+  const [paperData, setPaperData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // const API_URL = 'http://172.29.16.1:8080/'; // Base API URL
+
+  useEffect(() => {
+    const fetchPaper = async () => {
+      if (selectedSubject && selectedYear) {
+        setIsLoading(true);
+        setError(null);
+        try {
+          const response = await fetch(`${baseURL}/questionbank/get/${selectedSubject}/${selectedYear}`);
+          console.log('Response status:', response.status);
+          if (!response.ok) {
+            throw new Error('Failed to fetch paper');
+          }
+          const data = await response.json();
+          setPaperData(data);
+        } catch (error) {
+          setError(error.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchPaper();
+  }, [selectedSubject, selectedYear]); // Re-run useEffect on subject/year change
 
   const handleSubjectChange = (value) => setSelectedSubject(value);
   const handleYearChange = (value) => setSelectedYear(value);
@@ -27,10 +58,10 @@ const QuestionPaper = ({ navigation }) => {
             style={styles.dropdown}
             onValueChange={handleSubjectChange}
           >
-            <Picker.Item label="Subject" value="" />
-            <Picker.Item label="Mathematics" value="math" />
-            <Picker.Item label="Science" value="science" />
-            
+            <Picker.Item label="Select Subject" value="" />
+            <Picker.Item label="Mathematics" value="Mathematics" />
+            <Picker.Item label="Science" value="Science" />
+            {/* Add more subject options here */}
           </Picker>
         </View>
         <View style={styles.pickerWrapper}>
@@ -39,24 +70,37 @@ const QuestionPaper = ({ navigation }) => {
             style={styles.dropdown}
             onValueChange={handleYearChange}
           >
-            <Picker.Item label="Year" value="" />
-            <Picker.Item label="2022-23" value="2022-23" />
-            <Picker.Item label="2021-22" value="2021-22" />
-           
+            <Picker.Item label="Select Year" value="" />
+            <Picker.Item label="2022-23" value="2023" />
+            <Picker.Item label="2021-22" value="2021" />
+            {/* Add more year options here */}
           </Picker>
         </View>
       </View>
-      <View style={styles.content}>
-        <Image 
-          source={require('../assets/img/exam12.png')} 
-          style={styles.image}
-        />
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Download</Text>
-        </TouchableOpacity>
-      </View>
+      {isLoading && (
+        <View style={styles.loading}>
+          <Text>Loading paper................</Text>
+        </View>
+      )}
+      {error && (
+        <View style={styles.error}>
+          <Text>Error: {error}</Text>
+        </View>
+      )}
+      {paperData && (
+        <>
+          <View style={styles.content}>
+            {paperData.subject}
+            {paperData.year}
+            {paperData.document}
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Download</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -148,6 +192,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  error: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
