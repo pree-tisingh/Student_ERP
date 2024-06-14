@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity,Platform,StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
+import baseURL from "./api/baseURL";
 
-const baseURL = 'http://localhost:8080';
+// const baseURL = 'http://192.168.34.254:8080';
 
 
 export default function Attendance() {
@@ -29,9 +30,9 @@ export default function Attendance() {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const studentId = '2'; // This should be fetched dynamically, possibly via prop
+        const studentId = '1'; // This should be fetched dynamically, possibly via prop
         const studentResponse = await fetch(`${baseURL}/student/get/${studentId}`);
-        const attendanceResponse = await fetch(`${baseURL}/${studentId}`);
+        const attendanceResponse = await fetch(`${baseURL}/attendence/${studentId}`);
 
         if (!studentResponse.ok || !attendanceResponse.ok) {
           throw new Error(`Error fetching data: ${studentResponse.statusText} (${studentResponse.status})`);

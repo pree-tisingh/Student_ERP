@@ -5,13 +5,21 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const QuestionBank = ({ navigation }) => {
   const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedExamYear, setSelectedExamYear] = useState('');
+  const [selectedYear, setselectedYear] = useState('');
 
   const handleSubjectChange = (value) => setSelectedSubject(value);
-  const handleExamYearChange = (value) => setSelectedExamYear(value);
+  const handleExamYearChange = (value) => setselectedYear(value);
 
   const showPaper = () => {
-    alert(`Showing paper for Subject: ${selectedSubject}, Exam Year: ${selectedExamYear}`);
+    if (!selectedSubject || !selectedYear) {
+      alert('Please select a subject and exam year.');
+      return;
+    }
+
+    navigation.navigate('QuestionPaper', {
+      selectedSubject,
+      selectedYear,
+    });
   };
 
   return (
@@ -33,14 +41,13 @@ const QuestionBank = ({ navigation }) => {
               onValueChange={handleSubjectChange}
             >
               <Picker.Item label="Select Subject" value="" />
-              <Picker.Item label="Mathematics" value="math" />
-              <Picker.Item label="Science" value="science" />
-              
+              <Picker.Item label="Mathematics" value="Mathematics" />
+              <Picker.Item label="Science" value="Science" />
             </Picker>
           </View>
           <View style={styles.pickerWrapper}>
             <Picker
-              selectedValue={selectedExamYear}
+              selectedValue={selectedYear}
               style={styles.dropdown}
               onValueChange={handleExamYearChange}
             >
@@ -48,17 +55,17 @@ const QuestionBank = ({ navigation }) => {
               <Picker.Item label="2021" value="2021" />
               <Picker.Item label="2022" value="2022" />
               <Picker.Item label="2023" value="2023" />
-             
             </Picker>
           </View>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('QuestionPaper')}>
+        <TouchableOpacity style={styles.button} onPress={showPaper}>
           <Text style={styles.buttonText}>Show Paper</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
