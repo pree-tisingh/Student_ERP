@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, StatusBar } 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 function TeacherDashboardScreen() {
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const [selectedIcon, setSelectedIcon] = useState(null);
 
   const handleBoxPress = (box) => {
@@ -14,15 +14,15 @@ function TeacherDashboardScreen() {
   };
 
   const boxesData = [
-    { icon: 'account-circle', name: 'Attendance', screen: 'Attendance' },
-    { icon: 'event', name: 'Time Table', screen: 'TimeTable' },
-    { icon: 'insert-drive-file', name: 'Documents', screen: 'Document' },
-    { icon: 'library-books', name: 'Subjects', screen: 'Subject' },
-    { icon: 'event-note', name: 'Examination', screen: 'Examination' },
-    { icon: 'payment', name: 'Fees', screen: 'Fees' },
+    { icon: 'groups', name: 'Admission', screen: 'Admission' },
+    { icon: 'account-circle', name: 'Attendance', screen: 'Attendace' },
+    { icon: 'calendar-month', name: 'Time Table', screen: 'TimeTable' },
+    { icon: 'insert-drive-file', name: 'Documents', screen: 'Documents' },
+    { icon: 'subject', name: 'Subjects', screen: 'Subjects' },
+    { icon: 'auto-stories', name: 'Examination', screen: 'Examination' },
     { icon: 'assignment', name: 'Online Test', screen: 'OnlineTest' },
     { icon: 'event', name: 'Events', screen: 'Event' },
-    { icon: 'calendar-today', name: 'Leave', screen: 'LeaveRequest' },
+    { icon: 'add-moderator', name: 'Leave', screen: 'LeaveRequest' },
     { icon: 'inventory', name: 'Inventory', screen: 'Inventory' },
     { icon: 'business', name: 'Boarding', screen: 'Hostel' },
     { icon: 'headset', name: 'Support & Chat', screen: 'Chat' },
@@ -48,23 +48,34 @@ function TeacherDashboardScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../assets/img/logo.png')} style={styles.logo} />
+        {/* <Image source={require('../assets/img/logo.png')} style={styles.logo} /> */}
         <Text style={styles.headerText}>DAV School</Text>
       </View>
       <View style={styles.box2}>
         <View style={styles.box3}>
-          <Image source={require("../assets/img/pp.png")} style={styles.profile} />
+          {/* <Image source={require("../assets/img/pp.png")} style={styles.profile} /> */}
         </View>
-        <Text style={styles.name}>Rashmi Sinha</Text>
-        <Text style={styles.admin}>Student: 10th "B"</Text>
+        <Text style={styles.name}>Khushi</Text>
+        <Text style={styles.admin}>High school Teacher</Text>
         <TouchableOpacity style={styles.button}></TouchableOpacity>
-        <Text style={styles.service}>Services</Text>
+        <View style={styles.blbox}>
+          <Text style={styles.wD}>Working Dashboard</Text>
+        </View>
       </View>
 
       <View style={styles.iconContainer}>
         {renderIcons()}
       </View>
+      
+      <TouchableOpacity style={styles.lgbtn}>
+          <View>
+          <Text style={styles.lgtxt}>Log Out</Text>
+          </View>
+      </TouchableOpacity>
+
     </View>
+
+    
   );
 }
 
@@ -124,16 +135,17 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   admin: {
-    fontSize: 15,
+    fontSize: 20,
     marginLeft: '25.5%',
     color: '#000',
     marginTop: 4,
   },
-  service: {
-    marginLeft: '6%',
-    marginTop: '12%',
-    fontSize: 22,
-    fontWeight: 'bold',
+  wD:{
+    textAlign:'center',
+    color:'#fff',
+    fontSize:18,
+    marginTop:'2%',
+    fontWeight:'500'
   },
   row: {
     flexDirection: 'row',
@@ -170,6 +182,29 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
+  blbox:{
+    width:'48%',
+    height:'38%',
+    backgroundColor:'#585E97',
+    marginTop:'6%',
+    alignSelf:'center',
+    borderRadius:11
+  },
+  lgbtn:{
+    width:'80%',
+    height:'7%',
+    backgroundColor:'#D95959',
+    marginTop:'4%',
+    alignSelf:'center',
+    borderRadius:11,
+    shadowColor:' 0px 3.596px 2.997px 0px #915151 inset;'
+  },
+  lgtxt:{
+    textAlign:'center',
+    fontSize:22,
+    color:'#fff',
+    marginTop:'4%'
+  }
 });
 
 export default TeacherDashboardScreen;
