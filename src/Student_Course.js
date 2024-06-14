@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -10,7 +11,8 @@ import {
   StatusBar
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-const Course = () => {
+
+const Course = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
